@@ -172,9 +172,9 @@ watch(selectedCharacter, () => {
       </div>
     </main>
 
-    <div>
+    <!-- <div>
       {{ documentFiles?.find((file) => file.name === 'Podręcznik Gry')?.data!.slice(50000, 100000) }}
-    </div>
+    </div> -->
 
     <roll-result-modal
       :is-show-modal="isShowModal"
