@@ -38,6 +38,9 @@ rules:
       caughtErrorsIgnorePattern: '^_'
   prettier/prettier:
     - error
+  quote-props: off
+  arrow-parens: off
+  vue/singleline-html-element-content-newline: off
   indent: off
   vue/html-self-closing:
     - error

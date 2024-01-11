@@ -24,15 +24,11 @@ body {
 }
 */
 
-.diana-page.page-enter-active .diana-page-content,
-.diana-page.page-leave-active .diana-page-content,
 .content-page.page-enter-active main,
 .content-page.page-leave-active main {
   transition: all 0.2s;
 }
 
-.diana-page.page-enter-from .diana-page-content,
-.diana-page.page-leave-to .diana-page-content,
 .content-page.page-enter-from main,
 .content-page.page-leave-to main {
   opacity: 0;
@@ -48,4 +44,8 @@ body {
 .index-page.page-enter-active,
 .index-page.page-leave-active {
   transition: all 0.4s;
+}
+
+.container {
+  @apply mx-auto px-4 max-w-7xl;
 }

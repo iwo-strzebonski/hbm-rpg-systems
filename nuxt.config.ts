@@ -1,5 +1,3 @@
-import { resolve } from 'path'
-
 import { APP_TITLE } from './settings/constants'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
@@ -7,17 +5,17 @@ const properties = [
   {
     hid: 'og:locale',
     property: 'og:locale',
-    content: ''
+    content: 'pl_PL'
   },
   {
     hid: 'og:type',
     property: 'og:type',
-    content: ''
+    content: 'website'
   },
   {
     hid: 'og:title',
     property: 'og:title',
-    content: ''
+    content: 'Homebrew Magic: RPG Systems'
   },
   {
     hid: 'og:description',
@@ -27,17 +25,17 @@ const properties = [
   {
     hid: 'og:url',
     property: 'og:url',
-    content: ''
+    content: 'https://integra.agh.edu.pl/'
   },
   {
     hid: 'og:site_name',
     property: 'og:site_name',
-    content: ''
+    content: 'Homebrew Magic: RPG Systems'
   },
   {
     hid: 'og:image',
     property: 'og:image',
-    content: ''
+    content: 'https://i.postimg.cc/T2NmZ0t5/integra-logo.png'
   }
 ]
 
@@ -45,7 +43,7 @@ const twitterProperties = [
   {
     hid: 'twitter:card',
     name: 'twitter:card',
-    content: ''
+    content: 'summary_large_image'
   },
   {
     hid: 'twitter:description',
@@ -55,22 +53,22 @@ const twitterProperties = [
   {
     hid: 'twitter:title',
     name: 'twitter:title',
-    content: ''
+    content: 'Homebrew Magic: RPG Systems'
   },
   {
     hid: 'twitter:image',
     name: 'twitter:image',
-    content: ''
+    content: 'https://i.postimg.cc/T2NmZ0t5/integra-logo.png'
   },
   {
     hid: 'twitter:site',
     name: 'twitter:site',
-    content: ''
+    content: '@hbm_rpg'
   },
   {
     hid: 'twitter:creator',
     name: 'twitter:creator',
-    content: ''
+    content: '@hbm_rpg'
   }
 ]
 
@@ -78,19 +76,19 @@ const icons = [
   {
     rel: 'icon',
     type: 'image/png',
-    href: '',
+    href: 'https://i.postimg.cc/wBtrHt7Y/integra-logo-100x100.png',
     sizes: '32x32'
   },
   {
     rel: 'icon',
     type: 'image/png',
-    href: '',
+    href: 'https://i.postimg.cc/bNTWRcKW/integra-logo-250x249.png',
     sizes: '192x192'
   },
   {
     rel: 'apple-touch-icon',
     type: 'image/png',
-    href: '',
+    href: 'https://i.postimg.cc/bNTWRcKW/integra-logo-250x249.png',
     sizes: '192x192'
   }
 ]
@@ -118,7 +116,7 @@ export default defineNuxtConfig({
         },
         {
           name: 'msapplication-TileImage',
-          content: ''
+          content: 'https://i.postimg.cc/T2NmZ0t5/integra-logo.png'
         },
         ...properties,
         ...twitterProperties
@@ -131,9 +129,9 @@ export default defineNuxtConfig({
   },
 
   nitro: {
-    prerender: {
-      routes: ['/sitemap.xml']
-    }
+    // prerender: {
+    //   routes: ['/sitemap.xml']
+    // }
   },
 
   css: [
@@ -162,9 +160,9 @@ export default defineNuxtConfig({
     devOptions: { enabled: true },
     registerType: 'autoUpdate',
     manifest: {
-      name: 'D',
-      short_name: 'D',
-      theme_color: '#ffffff',
+      name: 'Homebrew Magic: RPG Systems',
+      short_name: 'HbM: RPG Systems',
+      theme_color: '#990000',
       icons: icons.map((icon) => ({
         ...icon,
         src: icon.href
@@ -175,9 +173,9 @@ export default defineNuxtConfig({
   modules: [
     '@nuxt/content',
     '@nuxtjs/color-mode',
+    '@nuxt/image-edge',
     '@pinia/nuxt',
     '@pinia-plugin-persistedstate/nuxt',
-    '@nuxt/image',
     '@vite-pwa/nuxt',
     '@nuxtjs/tailwindcss'
   ],
@@ -199,6 +197,8 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    secretKey: process.env.SECRET_KEY
+    // JWT_SECRET: process.env.NUXT_JWT_SECRET,
+    // JWT_EXPIRES_IN: process.env.NUXT_JWT_EXPIRES_IN,
+    // JWT_ISSUER: process.env.NUXT_JWT_ISSUER
   }
 })
