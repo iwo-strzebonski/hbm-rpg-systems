@@ -117,9 +117,11 @@ function toggleDescription(spellId: number) {
 
             <fwb-table-body>
               <template v-for="({ key, isDescriptionOpen }, id) in $props.characterInfo['spells']" :key="key">
-                <fwb-table-row @click="toggleDescription(id)" class="cursor-pointer">
+                <fwb-table-row>
                   <fwb-table-head-cell>
-                    {{ key }}
+                    <fwb-button color="purple" class="h-full w-full" @click="toggleDescription(id)">
+                      {{ key }}
+                    </fwb-button>
                   </fwb-table-head-cell>
 
                   <fwb-table-cell v-if="isPriest" class="text-center">
