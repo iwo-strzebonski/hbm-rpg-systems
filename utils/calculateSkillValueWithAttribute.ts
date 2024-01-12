@@ -4,7 +4,7 @@ export default function calculateSkillValueWithAttribute(
   skillValue: string,
   attributeName: string,
   characterInfo: CharacterInfo | null = null
-) {
+): number {
   if (!characterInfo) {
     return parseInt(skillValue)
   }

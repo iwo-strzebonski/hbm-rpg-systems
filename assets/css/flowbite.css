@@ -63,3 +63,42 @@ button.flowbite.bg-green-700 {
 .flowbite .custom-modal.hidden {
   @apply -z-10 opacity-0 !block;
 }
+
+.flowbite.custom-accordion button,
+.flowbite .custom-accordion button {
+  @apply border-t border-x dark:!border-zinc-800;
+  @apply focus:dark:!ring-zinc-700;
+}
+
+.flowbite.custom-accordion .custom-content,
+.flowbite .custom-accordion .custom-content {
+  @apply [&>*]:border [&>*]:dark:!border-zinc-800;
+  @apply [&>*]:dark:!bg-zinc-900;
+}
+
+.flowbite.custom-accordion:not(.flush) .custom-content,
+.flowbite .custom-accordion:not(.flush) .custom-content {
+  @apply [&>*]:sm:rounded-b-lg;
+}
+
+.flowbite.custom-accordion .custom-header,
+.flowbite .custom-accordion .custom-header {
+  @apply !text-zinc-700 dark:!text-zinc-400;
+}
+
+.flowbite.custom-accordion .custom-header button,
+.flowbite .custom-accordion .custom-header button {
+  @apply uppercase text-xs font-bold px-6 py-3;
+  @apply !bg-zinc-100 dark:!bg-zinc-600;
+}
+
+.flowbite.custom-accordion .custom-content .custom-table,
+.flowbite .custom-accordion .custom-content .custom-table {
+  @apply !rounded-t-none;
+}
+
+.flowbite.custom-accordion .custom-content .custom-table thead,
+.flowbite .custom-accordion .custom-content .custom-table thead {
+  @apply !rounded-t-none;
+  @apply dark:!bg-zinc-700;
+}

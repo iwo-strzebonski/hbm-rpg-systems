@@ -27,8 +27,8 @@ export const CELLS_TO_READ: Record<
   {
     range: string
     name: string
-    attribute?: string
-    value?: string
+    value: string
+    customData?: string
   }
 > = {
   'base-info': {
@@ -49,7 +49,13 @@ export const CELLS_TO_READ: Record<
   'skills': {
     range: 'G27:V50',
     name: 'G',
-    attribute: 'H',
-    value: 'O'
+    value: 'O',
+    customData: 'H'
+  },
+  'spells': {
+    range: 'B69:T88',
+    name: 'B',
+    value: 'B',
+    customData: 'H'
   }
 }

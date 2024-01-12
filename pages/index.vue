@@ -12,7 +12,7 @@ const isShowModal = ref(false)
 const selectedId = ref('')
 const workbook = ref<XLSX.WorkBook | null>(null)
 const selectedCharacter = ref<string>('')
-const chosenSkill = ref<string>('')
+const modalTitle = ref<string>('')
 const rollResult = ref<{ results: number[]; sum: number }>({ results: [], sum: 0 })
 
 const { data: documentFiles } = useLazyAsyncData<DocumentFile[]>(async () => {
@@ -56,15 +56,19 @@ const characterInfo = ref<CharacterInfo>({
 
 function closeModal() {
   isShowModal.value = false
-  chosenSkill.value = ''
+  modalTitle.value = ''
 }
 
-function handleRollDice(skillId: number) {
-  const skill = characterInfo.value.skills[skillId]
-  const diceAmount = calculateSkillValueWithAttribute(skill.value, skill.customData as string, characterInfo.value)
+enum DiceRollTypeEnum {
+  SKILL = 'skills',
+  SPELL = 'spells'
+}
+
+function handleRollDice(skillOrSpellId: number, diceAmount: number, type: DiceRollTypeEnum) {
+  const skillOrSpell = characterInfo.value[type as keyof CharacterInfo][skillOrSpellId]
 
   const { results, sum } = rollDice(diceAmount)
-  chosenSkill.value = skill.key
+  modalTitle.value = skillOrSpell.key
 
   console.info(`Wynik rzutu: ${sum} (${results.join(', ')})`)
 
@@ -163,7 +167,13 @@ watch(selectedCharacter, () => {
       <character-skills-table
         v-if="characterInfo"
         :character-info="characterInfo"
-        @roll-dice="handleRollDice($event)"
+        @roll-dice="(id, amount) => handleRollDice(id, amount, DiceRollTypeEnum.SKILL)"
+      />
+
+      <character-spells-table
+        v-if="characterInfo"
+        :character-info="characterInfo"
+        @roll-dice="(id, amount) => handleRollDice(id, amount, DiceRollTypeEnum.SPELL)"
       />
 
       <div class="my-4">
@@ -180,7 +190,7 @@ watch(selectedCharacter, () => {
       :is-show-modal="isShowModal"
       :results="rollResult.results"
       :sum="rollResult.sum"
-      :chosen-skill="chosenSkill"
+      :modal-title="modalTitle"
       @close="closeModal"
     />
   </NuxtLayout>

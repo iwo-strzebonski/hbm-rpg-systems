@@ -7,7 +7,7 @@ const $props = defineProps<{
   isShowModal: boolean
   results: number[]
   sum: number
-  chosenSkill: string
+  modalTitle: string
 }>()
 
 const $emit = defineEmits({
@@ -23,7 +23,7 @@ const closeModal = () => {
   <fwb-modal class="flowbite custom-modal" :class="{ hidden: !isShowModal }" @close="closeModal">
     <template #header>
       <div class="flex items-center text-lg">
-        Twój rzut na <span class="underline ml-1">{{ $props.chosenSkill }}</span
+        Twój rzut na <span class="underline ml-1">{{ $props.modalTitle }}</span
         >: <b class="ml-1">{{ $props.sum }}</b>
       </div>
     </template>
@@ -31,8 +31,8 @@ const closeModal = () => {
     <template #body>
       <div class="inline-flex flex-wrap gap-2 text-base leading-relaxed text-gray-500 dark:text-gray-400">
         <span
-          v-for="result in $props.results"
-          :key="result"
+          v-for="(result, i) in $props.results"
+          :key="i"
           class="text-center block w-8 h-8 text-lg border"
           :class="getColorForRollResult(result)"
         >

@@ -13,7 +13,7 @@ export default function parseCharacterData(worksheet: XLSX.WorkSheet): Character
   }
 
   for (const k in CELLS_TO_READ) {
-    const { range: cellRange, name: nameColumn, value: valueColumn, attribute: attributeColumn } = CELLS_TO_READ[k]
+    const { range: cellRange, name: nameColumn, value: valueColumn, customData: customDataColumn } = CELLS_TO_READ[k]
 
     const key = k as keyof CharacterInfo
 
@@ -36,10 +36,12 @@ export default function parseCharacterData(worksheet: XLSX.WorkSheet): Character
         continue
       }
 
+      const customDataCell = customDataColumn && worksheet[`${customDataColumn}${current.row}`]
+
       data[key].push({
         key: worksheet[`${nameColumn}${current.row}`].v,
         value: worksheet[`${valueColumn}${current.row}`].v,
-        customData: attributeColumn ? worksheet[`${attributeColumn}${current.row}`].v : undefined
+        customData: customDataCell ? customDataCell.v : 0
       })
 
       current.nextRow()

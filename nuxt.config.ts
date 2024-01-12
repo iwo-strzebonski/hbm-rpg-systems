@@ -1,3 +1,6 @@
+import { resolve } from 'path'
+
+import iconData from './public/icons.json' assert { type: 'json' }
 import { APP_TITLE } from './settings/constants'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
@@ -20,12 +23,13 @@ const properties = [
   {
     hid: 'og:description',
     property: 'og:description',
-    content: ''
+    content:
+      'Aplikacja do wyświetlania kart postaci z systemu Homebrew Magic 3.0. Kompatybilna z Kartami Postaci Google Sheets 2.0.'
   },
   {
     hid: 'og:url',
     property: 'og:url',
-    content: 'https://integra.agh.edu.pl/'
+    content: 'https://rpg.octoturge.com/'
   },
   {
     hid: 'og:site_name',
@@ -35,7 +39,7 @@ const properties = [
   {
     hid: 'og:image',
     property: 'og:image',
-    content: 'https://i.postimg.cc/T2NmZ0t5/integra-logo.png'
+    content: 'https://i.postimg.cc/kGy4kyJD/octo-3d-logo.jpg'
   }
 ]
 
@@ -43,12 +47,13 @@ const twitterProperties = [
   {
     hid: 'twitter:card',
     name: 'twitter:card',
-    content: 'summary_large_image'
+    content: 'Aplikacja do wyświetlania kart postaci z systemu Homebrew Magic'
   },
   {
     hid: 'twitter:description',
     name: 'twitter:description',
-    content: ''
+    content:
+      'Aplikacja do wyświetlania kart postaci z systemu Homebrew Magic 3.0. Kompatybilna z Kartami Postaci Google Sheets 2.0.'
   },
   {
     hid: 'twitter:title',
@@ -72,24 +77,14 @@ const twitterProperties = [
   }
 ]
 
-const icons = [
+const msTileProperties = [
   {
-    rel: 'icon',
-    type: 'image/png',
-    href: 'https://i.postimg.cc/wBtrHt7Y/integra-logo-100x100.png',
-    sizes: '32x32'
+    name: 'msapplication-TileColor',
+    content: '#990000'
   },
   {
-    rel: 'icon',
-    type: 'image/png',
-    href: 'https://i.postimg.cc/bNTWRcKW/integra-logo-250x249.png',
-    sizes: '192x192'
-  },
-  {
-    rel: 'apple-touch-icon',
-    type: 'image/png',
-    href: 'https://i.postimg.cc/bNTWRcKW/integra-logo-250x249.png',
-    sizes: '192x192'
+    name: 'msapplication-TileImage',
+    content: 'https://i.postimg.cc/kGy4kyJD/octo-3d-logo.jpg'
   }
 ]
 
@@ -114,14 +109,11 @@ export default defineNuxtConfig({
           name: 'description',
           content: ''
         },
-        {
-          name: 'msapplication-TileImage',
-          content: 'https://i.postimg.cc/T2NmZ0t5/integra-logo.png'
-        },
         ...properties,
+        ...msTileProperties,
         ...twitterProperties
       ],
-      link: [...icons],
+      link: [...iconData.icons],
       htmlAttrs: {
         lang: 'pl'
       }
@@ -153,7 +145,14 @@ export default defineNuxtConfig({
 
   content: {
     documentDriven: true,
-    ignores: ['README.md', 'LICENSE.md', 'CHANGELOG.md', 'CONTRIBUTING.md', 'CODE_OF_CONDUCT.md', 'SECURITY.md']
+    ignores: ['README.md', 'LICENSE.md', 'CHANGELOG.md', 'CONTRIBUTING.md', 'CODE_OF_CONDUCT.md', 'SECURITY.md'],
+    sources: {
+      content: {
+        driver: 'fs',
+        prefix: 'blog',
+        base: resolve(__dirname, 'content')
+      }
+    }
   },
 
   pwa: {
@@ -163,10 +162,7 @@ export default defineNuxtConfig({
       name: 'Homebrew Magic: RPG Systems',
       short_name: 'HbM: RPG Systems',
       theme_color: '#990000',
-      icons: icons.map((icon) => ({
-        ...icon,
-        src: icon.href
-      }))
+      icons: iconData.icons
     }
   },
 
