@@ -28,12 +28,12 @@ export default function findEntryInDocument(
   switch (type) {
     case EntryTypeEnum.TALENT:
       // eslint-disable-next-line no-useless-escape
-      regstr = `\<h[1-6]\>\<a id="_(?<id>.{12})"\>\<\/a\>(?<name>${value}.*?)\<\/h[1-6]\>(?<requirements>\<strong\>Wymagania: \<\/strong\>.*?)??(?<description>.*?)\<h[1-6]\>`
+      regstr = `\<h[1-6]\>\<a id="_(?<id>.{10,12})"\>\<\/a\>(?<name>${value}.*?)\<\/h[1-6]\>(?<requirements>\<strong\>Wymagania: \<\/strong\>.*?)??(?<description>.*?)\<h[1-6]\>`
       break
 
     case EntryTypeEnum.SPELL:
       // eslint-disable-next-line no-useless-escape
-      regstr = `\<a id=\"_(?<id>.{12})\"\>\<\/a\>(?<name>${value})\<\/h[1-6]\>(?<stats>\<ul\>.*?\<\/ul\>)(?<description>\<p\>.*?\<\/p\>)\<h[1-6]\>`
+      regstr = `\<h[1-6]\>\<a id=\"_(?<id>.{10,12})\"\>\<\/a\>(?<name>${value})\<\/h[1-6]\>(?<stats>\<ul\>.*?\<\/ul\>)(?<description>.*?)\<h[1-6]\>`
       break
 
     default:

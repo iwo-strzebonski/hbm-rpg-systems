@@ -2,6 +2,7 @@ export interface CharacterInfoRecord {
   key: string
   value: string
   customData?: string
+  [key: string]: string | boolean | undefined
 }
 
 export default interface CharacterInfo {
@@ -9,4 +10,5 @@ export default interface CharacterInfo {
   'attributes': CharacterInfoRecord[]
   'talents': CharacterInfoRecord[]
   'skills': CharacterInfoRecord[]
+  'spells': CharacterInfoRecord[]
 }

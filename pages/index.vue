@@ -47,12 +47,7 @@ const worksheet = computed(() => {
   return workbook.value.Sheets[selectedCharacter.value]
 })
 
-const characterInfo = ref<CharacterInfo>({
-  'base-info': [],
-  'attributes': [],
-  'skills': [],
-  'talents': []
-})
+const characterInfo = ref<CharacterInfo | null>(null)
 
 function closeModal() {
   isShowModal.value = false
@@ -63,8 +58,12 @@ enum DiceRollTypeEnum {
   SKILL = 'skills',
   SPELL = 'spells'
 }
+// TODO: Add test parameter
+function handleRollDice(skillOrSpellId: number, diceAmount: number, type: DiceRollTypeEnum, _test?: string) {
+  if (!characterInfo.value) {
+    return
+  }
 
-function handleRollDice(skillOrSpellId: number, diceAmount: number, type: DiceRollTypeEnum) {
   const skillOrSpell = characterInfo.value[type as keyof CharacterInfo][skillOrSpellId]
 
   const { results, sum } = rollDice(diceAmount)
@@ -95,12 +94,7 @@ watch(selectedId, async () => {
 })
 
 watch(selectedCharacter, () => {
-  characterInfo.value = {
-    'base-info': [],
-    'attributes': [],
-    'skills': [],
-    'talents': []
-  }
+  characterInfo.value = null
 
   if (!selectedCharacter.value) {
     return
@@ -170,11 +164,16 @@ watch(selectedCharacter, () => {
         @roll-dice="(id, amount) => handleRollDice(id, amount, DiceRollTypeEnum.SKILL)"
       />
 
-      <character-spells-table
-        v-if="characterInfo"
-        :character-info="characterInfo"
-        @roll-dice="(id, amount) => handleRollDice(id, amount, DiceRollTypeEnum.SPELL)"
-      />
+      <div class="flex gap-4 flex-col md:flex-row mt-4">
+        <character-spells-table
+          v-if="characterInfo && documentFiles"
+          :character-info="characterInfo"
+          :document-files="documentFiles"
+          @roll-dice="(id, amount) => handleRollDice(id, amount, DiceRollTypeEnum.SPELL)"
+        />
+
+        <character-equipment-card v-if="characterInfo" :character-info="characterInfo" />
+      </div>
 
       <div class="my-4">
         <h3>RAW</h3>
@@ -183,7 +182,7 @@ watch(selectedCharacter, () => {
     </main>
 
     <!-- <div>
-      {{ documentFiles?.find((file) => file.name === 'Podręcznik Gry')?.data!.slice(50000, 100000) }}
+      {{ documentFiles?.find((file) => file.name === 'Księga Magii')?.data!.slice(30000, 35000) }}
     </div> -->
 
     <roll-result-modal

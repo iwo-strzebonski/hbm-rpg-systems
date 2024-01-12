@@ -45,7 +45,7 @@ function handleRollDice(skillId: number) {
         <fwb-accordion-header class="custom-header"> Umiejętności </fwb-accordion-header>
 
         <fwb-accordion-content class="custom-content [&>*]:p-0 overflow-auto max-h-[calc(100vh_-_66px)]">
-          <fwb-table class="flowbite custom-table relative" hoverable>
+          <fwb-table class="flowbite custom-table" hoverable>
             <fwb-table-head>
               <fwb-table-head-cell>Umiejętność</fwb-table-head-cell>
               <fwb-table-head-cell>Atrybut</fwb-table-head-cell>

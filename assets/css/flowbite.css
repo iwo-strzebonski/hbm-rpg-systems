@@ -102,3 +102,7 @@ button.flowbite.bg-green-700 {
   @apply !rounded-t-none;
   @apply dark:!bg-zinc-700;
 }
+
+.v-popper__popper {
+  transform: none !important;
+}
