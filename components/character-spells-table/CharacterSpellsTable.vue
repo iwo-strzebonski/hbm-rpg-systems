@@ -37,8 +37,8 @@ const isPriest = computed(() => {
 
 function calculateSpellDiceAmount(spellId: number) {
   const spell = $props.characterInfo.spells[spellId]
-  const skill = $props.characterInfo.skills.find((s) =>
-    isPriest.value && s.key === spell.isPrayer ? 'Oddanie' : 'Zdolności Magiczne'
+  const skill = $props.characterInfo.skills.find(
+    (s) => s.key === (isPriest.value && spell.isPrayer ? 'Oddanie' : 'Zdolności Magiczne')
   )
 
   if (!skill) {
@@ -62,21 +62,13 @@ function getSpellDescription(spellId: number) {
   const spell = $props.characterInfo.spells[spellId]
 
   if (!spell) {
-    return {
-      id: '',
-      stats: '',
-      description: ''
-    }
+    return null
   }
 
   const spellInfo = findEntryInDocument($props.documentFiles, 'Księga Magii', spell.key, EntryTypeEnum.SPELL)
 
   if (!spellInfo) {
-    return {
-      id: '',
-      stats: '',
-      description: ''
-    }
+    return null
   }
 
   return spellInfo as {
@@ -99,7 +91,7 @@ function toggleDescription(spellId: number) {
 
 <template>
   <lazy-client-only>
-    <fwb-accordion class="flowbite custom-accordion w-full md:w-1/2">
+    <fwb-accordion class="flowbite custom-accordion w-full lg:w-1/2">
       <fwb-accordion-panel>
         <fwb-accordion-header class="custom-header"> Zaklęcia </fwb-accordion-header>
 
@@ -116,17 +108,17 @@ function toggleDescription(spellId: number) {
             </fwb-table-head>
 
             <fwb-table-body>
-              <template v-for="({ key, isDescriptionOpen }, id) in $props.characterInfo['spells']" :key="key">
+              <template v-for="({ key, isDescriptionOpen }, i) in $props.characterInfo['spells']" :key="key">
                 <fwb-table-row>
                   <fwb-table-head-cell>
-                    <fwb-button color="purple" class="h-full w-full" @click="toggleDescription(id)">
+                    <fwb-button color="purple" class="h-full w-full" @click="toggleDescription(i)">
                       {{ key }}
                     </fwb-button>
                   </fwb-table-head-cell>
 
                   <fwb-table-cell v-if="isPriest" class="text-center">
                     <input
-                      v-model="$props.characterInfo['spells'][id].isPrayer"
+                      v-model="$props.characterInfo['spells'][i].isPrayer"
                       type="checkbox"
                       class="dark:bg-zinc-700"
                     />
@@ -134,7 +126,7 @@ function toggleDescription(spellId: number) {
 
                   <fwb-table-cell>
                     <input
-                      v-model="$props.characterInfo['spells'][id].customData"
+                      v-model="$props.characterInfo['spells'][i].customData"
                       step="1"
                       min="-10"
                       max="10"
@@ -144,29 +136,31 @@ function toggleDescription(spellId: number) {
                   </fwb-table-cell>
 
                   <fwb-table-cell>
-                    {{ calculateSpellDiceAmount(id) }}
+                    {{ calculateSpellDiceAmount(i) }}
                   </fwb-table-cell>
 
                   <fwb-table-cell>
-                    <fwb-button class="flowbite" color="default" size="sm" @click="handleRollDice(id)">
+                    <fwb-button class="flowbite" color="default" size="sm" @click="handleRollDice(i)">
                       Rzut
                     </fwb-button>
                   </fwb-table-cell>
                 </fwb-table-row>
 
-                <fwb-table-row v-show="isDescriptionOpen">
-                  <fwb-table-cell colspan="5" class="text-left text-base bg-white dark:!bg-zinc-900">
-                    <p class="text-left ml-4 [&>*]:list-disc" v-html="getSpellDescription(id).stats"></p>
-                    <!-- {{ getSpellDescription(id) }} -->
+                <fwb-table-row v-show="isDescriptionOpen" v-if="getSpellDescription(i)">
+                  <fwb-table-cell
+                    colspan="5"
+                    class="text-left text-base bg-white dark:!bg-zinc-900 w-[calc(100%_-_6rem)]"
+                  >
+                    <p class="text-left ml-4 [&>*]:list-disc" v-html="getSpellDescription(i)?.stats"></p>
 
                     <p
-                      class="text-left text-sm flex flex-col mt-4 gap-2 w-full [&>*]:break-word whitespace-normal"
-                      v-html="getSpellDescription(id).description"
+                      class="text-left text-sm flex flex-col mt-4 gap-2 [&>*]:break-word whitespace-normal"
+                      v-html="getSpellDescription(i)?.description"
                     ></p>
 
                     <nuxt-link
                       class="float-left mt-2 font-semibold hover:underline text-blue-500 dark:text-blue-400 text-lg"
-                      :to="`https://docs.google.com/document/d/${spellbookId}#heading=h.${getSpellDescription(id)?.id}`"
+                      :to="`https://docs.google.com/document/d/${spellbookId}#heading=h.${getSpellDescription(i)?.id}`"
                       target="_blank"
                       rel="noopener noreferrer"
                     >

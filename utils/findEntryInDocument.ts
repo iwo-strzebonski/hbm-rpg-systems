@@ -44,7 +44,7 @@ export default function findEntryInDocument(
   const entry = document.match(re)
 
   if (!entry) {
-    return {}
+    return null
 
     // throw new Error(`Entry ${value} not found in document`)
   }

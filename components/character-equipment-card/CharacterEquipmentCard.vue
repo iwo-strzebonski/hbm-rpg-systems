@@ -4,7 +4,7 @@ import { FwbAccordion, FwbAccordionPanel, FwbAccordionHeader, FwbAccordionConten
 
 <template>
   <lazy-client-only>
-    <fwb-accordion class="flowbite custom-accordion w-full md:w-1/2">
+    <fwb-accordion class="flowbite custom-accordion w-full lg:w-1/2">
       <fwb-accordion-panel>
         <fwb-accordion-header class="custom-header"> Ekwipunek </fwb-accordion-header>
 

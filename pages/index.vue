@@ -164,7 +164,7 @@ watch(selectedCharacter, () => {
         @roll-dice="(id, amount) => handleRollDice(id, amount, DiceRollTypeEnum.SKILL)"
       />
 
-      <div class="flex gap-4 flex-col md:flex-row mt-4">
+      <div class="flex gap-4 flex-col lg:flex-row mt-4">
         <character-spells-table
           v-if="characterInfo && documentFiles"
           :character-info="characterInfo"
