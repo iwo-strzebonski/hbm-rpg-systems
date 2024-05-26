@@ -56,7 +56,12 @@ button.flowbite.bg-green-700 {
 
 .flowbite.custom-modal,
 .flowbite .custom-modal {
-  @apply transition-opacity duration-500 ease-in-out;
+  @apply transition-opacity duration-500 ease-in-out !absolute;
+}
+
+.flowbite.custom-modal > .fixed > div,
+.flowbite .custom-modal > .fixed > div {
+  @apply !h-max;
 }
 
 .flowbite.custom-modal.hidden,

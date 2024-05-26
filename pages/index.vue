@@ -14,6 +14,7 @@ const workbook = ref<XLSX.WorkBook | null>(null)
 const selectedCharacter = ref<string>('')
 const modalTitle = ref<string>('')
 const rollResult = ref<{ results: number[]; sum: number }>({ results: [], sum: 0 })
+const testValue = ref<string>('')
 
 const { data: documentFiles } = useLazyAsyncData<DocumentFile[]>(async () => {
   const files = await Promise.all(
@@ -58,8 +59,9 @@ enum DiceRollTypeEnum {
   SKILL = 'skills',
   SPELL = 'spells'
 }
+
 // TODO: Add test parameter
-function handleRollDice(skillOrSpellId: number, diceAmount: number, type: DiceRollTypeEnum, _test?: string) {
+function handleRollDice(skillOrSpellId: number, diceAmount: number, type: DiceRollTypeEnum, test = '') {
   if (!characterInfo.value) {
     return
   }
@@ -75,6 +77,8 @@ function handleRollDice(skillOrSpellId: number, diceAmount: number, type: DiceRo
     results,
     sum
   }
+
+  testValue.value = test
 
   isShowModal.value = true
 }
@@ -109,7 +113,7 @@ watch(selectedCharacter, () => {
 </script>
 
 <template>
-  <NuxtLayout>
+  <main>
     <header class="w-full p-4 dark:bg-zinc-800">
       <h1 class="text-4xl mb-0">Karta Postaci</h1>
       <h2 class="text-2xl">HbM: RPG v3.0</h2>
@@ -169,7 +173,7 @@ watch(selectedCharacter, () => {
           v-if="characterInfo && documentFiles"
           :character-info="characterInfo"
           :document-files="documentFiles"
-          @roll-dice="(id, amount) => handleRollDice(id, amount, DiceRollTypeEnum.SPELL)"
+          @roll-dice="(id, amount, test) => handleRollDice(id, amount, DiceRollTypeEnum.SPELL, test)"
         />
 
         <character-equipment-card v-if="characterInfo" :character-info="characterInfo" />
@@ -190,7 +194,8 @@ watch(selectedCharacter, () => {
       :results="rollResult.results"
       :sum="rollResult.sum"
       :modal-title="modalTitle"
+      :test-value="testValue"
       @close="closeModal"
     />
-  </NuxtLayout>
+  </main>
 </template>
