@@ -26,7 +26,7 @@ const $props = defineProps<{
 }>()
 
 const $emit = defineEmits({
-  rollDice: (_id: number, _amount: number) => true
+  rollDice: (_id: number, _amount: number, _test: string) => true
 })
 
 const spellbookId = DOCUMENTS.find((document) => document.name === 'Księga Magii')?.documentId
@@ -54,8 +54,26 @@ function calculateSpellDiceAmount(spellId: number) {
   return skillValue + parseInt(spell.customData as string)
 }
 
+function getTestValueForSpell(spellId: number): string {
+  const desc = getSpellDescription(spellId)
+
+  if (!desc) return '0:0'
+
+  const { stats } = desc
+
+  const re = /<li>.*?(?<testValue>\d:\d)<\/li>/
+
+  const testValueMatch = stats.match(re)
+
+  if (!testValueMatch?.groups?.testValue) {
+    return '0:0'
+  }
+
+  return testValueMatch.groups.testValue
+}
+
 function handleRollDice(spellId: number) {
-  $emit('rollDice', spellId, calculateSpellDiceAmount(spellId))
+  $emit('rollDice', spellId, calculateSpellDiceAmount(spellId), getTestValueForSpell(spellId))
 }
 
 function getSpellDescription(spellId: number) {

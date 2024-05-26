@@ -4,25 +4,31 @@ import { initFlowbite } from 'flowbite'
 
 const { $pwa } = useNuxtApp()
 
-onMounted(() => {
+onMounted(async () => {
   console.debug($pwa)
 
-  if ($pwa?.offlineReady) {
+  if (!$pwa) {
+    return
+  }
+
+  if ($pwa.offlineReady) {
     alert('App is ready to work offline')
   }
 
-  if ($pwa?.isInstalled) {
+  if ($pwa.isInstalled) {
     // alert('App is installed')
 
-    if ($pwa?.needRefresh) {
+    if ($pwa.needRefresh) {
       alert('App has update available')
 
-      $pwa?.install()
+      await $pwa.updateServiceWorker()
+      await $pwa.install()
     }
   } else {
     // alert('App is not installed')
 
-    $pwa?.install()
+    $pwa.showInstallPrompt = true
+    $pwa.install()
   }
 
   // $pwa.update()
@@ -39,6 +45,8 @@ onBeforeMount(() => {
 
     <VitePwaManifest />
 
-    <NuxtPage />
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
   </div>
 </template>

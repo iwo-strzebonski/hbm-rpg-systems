@@ -8,6 +8,7 @@ const $props = defineProps<{
   results: number[]
   sum: number
   modalTitle: string
+  testValue?: string
 }>()
 
 const $emit = defineEmits({
@@ -15,16 +16,38 @@ const $emit = defineEmits({
 })
 
 const closeModal = () => {
+  console.info(testData.value, $props.testValue)
   $emit('close')
 }
+
+const testData = computed(() => (!$props.testValue ? [0, 0] : $props.testValue.split(':').map((v) => parseInt(v))))
+const missingSuccesses = computed(() => {
+  if (!$props.testValue) return 0
+
+  const successes = $props.results.reduce((v, c) => (v += +(c >= testData.value[0])), 0)
+
+  console.info(successes, testData.value)
+
+  return successes >= testData.value[1] ? 0 : testData.value[1] - successes
+})
 </script>
 
 <template>
   <fwb-modal class="flowbite custom-modal" :class="{ hidden: !isShowModal }" @close="closeModal">
     <template #header>
       <div class="flex items-center text-lg">
-        Twój rzut na <span class="underline ml-1">{{ $props.modalTitle }}</span
+        Twój rzut na
+        <span class="underline ml-1"
+          >{{ $props.modalTitle }}<span v-if="testValue"> [{{ testValue }}]</span> </span
         >: <b class="ml-1">{{ $props.sum }}</b>
+
+        <span v-if="testValue">
+          &nbsp;-&nbsp;
+          <span v-if="missingSuccesses === 0" class="underline !text-green-500">Powodzenie</span>
+          <span v-else class="underline !text-red-500">
+            Niepowodzenie [{{ testData[1] - missingSuccesses }} sukces(y)]
+          </span>
+        </span>
       </div>
     </template>
 
@@ -34,7 +57,7 @@ const closeModal = () => {
           v-for="(result, i) in $props.results"
           :key="i"
           class="text-center block w-8 h-8 text-lg border"
-          :class="getColorForRollResult(result)"
+          :class="getColorForRollResult(result, testData[0])"
         >
           {{ result }}
         </span>

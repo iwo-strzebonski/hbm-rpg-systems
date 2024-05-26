@@ -1,9 +1,9 @@
-export default function getColorForRollResult(result: number) {
-  if (result === 1) {
+export default function getColorForRollResult(result: number, testScore = 0) {
+  if ((testScore === 0 && result === 1) || (testScore > 0 && result < testScore)) {
     return '!border-red-500 !text-red-500'
   }
 
-  if (result === 6) {
+  if ((testScore === 0 && result === 6) || (testScore > 0 && result >= testScore)) {
     return '!border-green-500 !text-green-500'
   }
 
