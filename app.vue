@@ -39,6 +39,8 @@ onBeforeMount(() => {
 
     <VitePwaManifest />
 
-    <NuxtPage />
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
   </div>
 </template>
