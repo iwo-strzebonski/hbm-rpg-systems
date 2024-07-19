@@ -15,6 +15,7 @@ const selectedCharacter = ref<string>('')
 const modalTitle = ref<string>('')
 const rollResult = ref<{ results: number[]; sum: number }>({ results: [], sum: 0 })
 const testValue = ref<string>('')
+const displayRaw = ref(false)
 
 const { data: documentFiles } = useLazyAsyncData<DocumentFile[]>(async () => {
   const files = await Promise.all(
@@ -60,7 +61,6 @@ enum DiceRollTypeEnum {
   SPELL = 'spells'
 }
 
-// TODO: Add test parameter
 function handleRollDice(skillOrSpellId: number, diceAmount: number, type: DiceRollTypeEnum, test = '') {
   if (!characterInfo.value) {
     return
@@ -83,6 +83,27 @@ function handleRollDice(skillOrSpellId: number, diceAmount: number, type: DiceRo
   isShowModal.value = true
 }
 
+function handleCastSpell(spellId: number, diceAmount: number, test: string) {
+  if (!characterInfo.value) return
+
+  const manaCost = characterInfo.value.spells[spellId].cost || 0
+  const manaIndex = characterInfo.value.stats.findIndex((attr) => attr.key === 'Mana')
+
+  if (manaIndex === -1) {
+    return
+  }
+
+  const currentMana = Number(characterInfo.value.stats[manaIndex].customData)
+
+  if (Number(currentMana) < Number(manaCost)) {
+    return
+  }
+
+  handleRollDice(spellId, diceAmount, DiceRollTypeEnum.SPELL, test)
+
+  characterInfo.value.stats[manaIndex].customData = String(currentMana - Number(manaCost))
+}
+
 watch(selectedId, async () => {
   workbook.value = null
 
@@ -97,15 +118,9 @@ watch(selectedId, async () => {
   }
 })
 
-watch(selectedCharacter, () => {
-  characterInfo.value = null
-
-  if (!selectedCharacter.value) {
-    return
-  }
-
-  if (!worksheet.value) {
-    return
+watch(worksheet, () => {
+  if (!(selectedCharacter.value && worksheet.value)) {
+    return null
   }
 
   characterInfo.value = parseCharacterData(worksheet.value)
@@ -151,8 +166,9 @@ watch(selectedCharacter, () => {
           <character-details-table v-if="characterInfo" :character-info="characterInfo" />
         </div>
 
-        <div class="w-full md:w-1/2">
+        <div class="w-full md:w-1/2 flex flex-col gap-4">
           <character-attributes-table v-if="characterInfo" :character-info="characterInfo" />
+          <character-stats-table v-if="characterInfo" :character-info="characterInfo" />
         </div>
       </div>
 
@@ -173,15 +189,24 @@ watch(selectedCharacter, () => {
           v-if="characterInfo && documentFiles"
           :character-info="characterInfo"
           :document-files="documentFiles"
-          @roll-dice="(id, amount, test) => handleRollDice(id, amount, DiceRollTypeEnum.SPELL, test)"
+          @cast-spell="(id, amount, test) => handleCastSpell(id, amount, test)"
         />
 
         <character-equipment-card v-if="characterInfo" :character-info="characterInfo" />
       </div>
 
       <div class="my-4">
-        <h3>RAW</h3>
-        <pre class="text-xs">{{ characterInfo }}</pre>
+        <button class="inline-flex items-center gap-1" @click="displayRaw = !displayRaw">
+          <h3>RAW</h3>
+          <lazy-client-only>
+            <fa-icon v-if="displayRaw" icon="caret-up" class="h-6 w-6 pb-1" />
+            <fa-icon v-else icon="caret-down" class="h-6 w-6 pb-1" />
+          </lazy-client-only>
+        </button>
+
+        <pre v-if="displayRaw" class="text-xs py-2 px-4 border rounded-xl bg-zinc-50 dark:bg-zinc-950">
+          {{ characterInfo }}
+        </pre>
       </div>
     </main>
 

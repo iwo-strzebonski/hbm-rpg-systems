@@ -5,8 +5,6 @@ import { initFlowbite } from 'flowbite'
 const { $pwa } = useNuxtApp()
 
 onMounted(async () => {
-  console.debug($pwa)
-
   if (!$pwa) {
     return
   }

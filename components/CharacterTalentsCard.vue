@@ -12,6 +12,21 @@ const $props = defineProps<{
   characterInfo: CharacterInfo
   documentFiles: DocumentFile[]
 }>()
+
+const uniqueTalentsWithRepeatCount = computed(() => {
+  const talents = $props.characterInfo?.talents || []
+
+  const uniqueTalents: Record<string, number> = {}
+
+  for (const talent of talents) {
+    const subtalent = talent.customData as string
+    const key = talent.key + (subtalent && subtalent !== '---' ? ` (${subtalent})` : '')
+
+    uniqueTalents[key] = (uniqueTalents[key] || 0) + 1
+  }
+
+  return uniqueTalents
+})
 </script>
 
 <template>
@@ -22,43 +37,55 @@ const $props = defineProps<{
 
         <fwb-accordion-content class="custom-content [&>*]:p-0">
           <fwb-accordion
-            v-if="$props.characterInfo"
+            v-if="Object.keys(uniqueTalentsWithRepeatCount).length"
             class="custom-accordion flush"
             always-open
             flush
             :open-first-item="false"
           >
-            <fwb-accordion-panel v-for="{ value } in $props.characterInfo['talents']" :key="value">
+            <fwb-accordion-panel v-for="(value, key) in uniqueTalentsWithRepeatCount" :key="key">
               <fwb-accordion-header class="[&>*]:dark:!bg-zinc-800">
-                {{ value }}
+                {{ key }} <span v-if="value > 1">(x{{ value }})</span>
               </fwb-accordion-header>
 
               <fwb-accordion-content class="custom-content">
                 <div>
                   <p
                     v-if="
-                      findEntryInDocument($props.documentFiles, 'Podręcznik Gry', value, EntryTypeEnum.TALENT)
-                        ?.requirements
+                      findEntryInDocument(
+                        $props.documentFiles,
+                        'Podręcznik Gry',
+                        key.split(' ')[0],
+                        EntryTypeEnum.TALENT
+                      )?.requirements
                     "
                     class="mb-2 text-zinc-500 dark:text-zinc-400"
                     v-html="
-                      findEntryInDocument($props.documentFiles, 'Podręcznik Gry', value, EntryTypeEnum.TALENT)
-                        ?.requirements
+                      findEntryInDocument(
+                        $props.documentFiles,
+                        'Podręcznik Gry',
+                        key.split(' ')[0],
+                        EntryTypeEnum.TALENT
+                      )?.requirements
                     "
                   ></p>
 
                   <p
                     class="text-zinc-500 dark:text-zinc-400 flex flex-col gap-2"
                     v-html="
-                      findEntryInDocument($props.documentFiles, 'Podręcznik Gry', value, EntryTypeEnum.TALENT)
-                        ?.description
+                      findEntryInDocument(
+                        $props.documentFiles,
+                        'Podręcznik Gry',
+                        key.split(' ')[0],
+                        EntryTypeEnum.TALENT
+                      )?.description
                     "
                   ></p>
 
                   <nuxt-link
                     class="mt-2 font-semibold hover:underline text-blue-500 dark:text-blue-400 text-lg"
                     :to="`https://docs.google.com/document/d/${corebookId}#heading=h.${
-                      findEntryInDocument($props.documentFiles, 'Podręcznik Gry', value, EntryTypeEnum.TALENT)?.id
+                      findEntryInDocument($props.documentFiles, 'Podręcznik Gry', key, EntryTypeEnum.TALENT)?.id
                     }`"
                     target="_blank"
                     rel="noopener noreferrer"

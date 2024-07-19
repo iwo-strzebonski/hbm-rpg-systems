@@ -9,11 +9,20 @@ export default function parseCharacterData(worksheet: XLSX.WorkSheet): Character
     'base-info': [],
     'attributes': [],
     'skills': [],
-    'talents': []
+    'talents': [],
+    'spells': [],
+    'stats': [],
+    'eldritch': []
   }
 
   for (const k in CELLS_TO_READ) {
-    const { range: cellRange, name: nameColumn, value: valueColumn, customData: customDataColumn } = CELLS_TO_READ[k]
+    const {
+      range: cellRange,
+      name: nameColumn,
+      value: valueColumn,
+      customData: customDataColumn,
+      cost: costColumn
+    } = CELLS_TO_READ[k]
 
     const key = k as keyof CharacterInfo
 
@@ -37,11 +46,13 @@ export default function parseCharacterData(worksheet: XLSX.WorkSheet): Character
       }
 
       const customDataCell = customDataColumn && worksheet[`${customDataColumn}${current.row}`]
+      const costCell = costColumn && worksheet[`${costColumn}${current.row}`]
 
       data[key].push({
         key: worksheet[`${nameColumn}${current.row}`].v,
-        value: worksheet[`${valueColumn}${current.row}`].v,
-        customData: customDataCell ? customDataCell.v : 0
+        value: (worksheet[`${valueColumn}${current.row}`] || { v: '' }).v,
+        customData: customDataCell ? customDataCell.v : 0,
+        cost: costCell ? costCell.v : 0
       })
 
       current.nextRow()
