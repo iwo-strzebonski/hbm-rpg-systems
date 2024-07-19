@@ -29,6 +29,7 @@ export const CELLS_TO_READ: Record<
     name: string
     value: string
     customData?: string
+    cost?: string
   }
 > = {
   'base-info': {
@@ -39,12 +40,14 @@ export const CELLS_TO_READ: Record<
   'attributes': {
     range: 'B17:C20',
     name: 'B',
-    value: 'C'
+    value: 'C',
+    customData: 'D'
   },
   'talents': {
     range: 'B26:B62',
     name: 'B',
-    value: 'B'
+    value: 'B',
+    customData: 'E'
   },
   'skills': {
     range: 'G27:V50',
@@ -56,6 +59,18 @@ export const CELLS_TO_READ: Record<
     range: 'B69:T88',
     name: 'B',
     value: 'B',
-    customData: 'H'
+    customData: 'H',
+    cost: 'D'
+  },
+  'stats': {
+    range: 'F16:J20',
+    name: 'F',
+    value: 'I',
+    customData: 'J'
+  },
+  'eldritch': {
+    range: 'G56:I58',
+    name: 'G',
+    value: 'I'
   }
 }

@@ -43,10 +43,8 @@ const missingSuccesses = computed(() => {
 
         <span v-if="testValue">
           &nbsp;-&nbsp;
-          <span v-if="missingSuccesses === 0" class="underline !text-green-500">Powodzenie</span>
-          <span v-else class="underline !text-red-500">
-            Niepowodzenie [{{ testData[1] - missingSuccesses }} sukces(y)]
-          </span>
+          <span v-if="missingSuccesses === 0" class="underline !text-green-500">Sukces</span>
+          <span v-else class="underline !text-red-500"> Porażka [{{ testData[1] - missingSuccesses }} sukces(y)] </span>
         </span>
       </div>
     </template>

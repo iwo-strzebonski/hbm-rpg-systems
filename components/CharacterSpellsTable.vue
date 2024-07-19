@@ -26,7 +26,7 @@ const $props = defineProps<{
 }>()
 
 const $emit = defineEmits({
-  rollDice: (_id: number, _amount: number, _test: string) => true
+  castSpell: (_id: number, _amount: number, _test: string) => true
 })
 
 const spellbookId = DOCUMENTS.find((document) => document.name === 'Księga Magii')?.documentId
@@ -73,7 +73,7 @@ function getTestValueForSpell(spellId: number): string {
 }
 
 function handleRollDice(spellId: number) {
-  $emit('rollDice', spellId, calculateSpellDiceAmount(spellId), getTestValueForSpell(spellId))
+  $emit('castSpell', spellId, calculateSpellDiceAmount(spellId), getTestValueForSpell(spellId))
 }
 
 function getSpellDescription(spellId: number) {
@@ -117,6 +117,7 @@ function toggleDescription(spellId: number) {
           <fwb-table class="flowbite custom-table" hoverable>
             <fwb-table-head>
               <fwb-table-head-cell>Nazwa</fwb-table-head-cell>
+              <fwb-table-head-cell>Koszt Many</fwb-table-head-cell>
               <fwb-table-head-cell v-if="isPriest">Modlitwa?</fwb-table-head-cell>
               <fwb-table-head-cell>Bonus</fwb-table-head-cell>
               <fwb-table-head-cell>Ilość kości</fwb-table-head-cell>
@@ -133,6 +134,10 @@ function toggleDescription(spellId: number) {
                       {{ key }}
                     </fwb-button>
                   </fwb-table-head-cell>
+
+                  <fwb-table-cell>
+                    {{ $props.characterInfo['spells'][i].cost }}
+                  </fwb-table-cell>
 
                   <fwb-table-cell v-if="isPriest" class="text-center">
                     <input

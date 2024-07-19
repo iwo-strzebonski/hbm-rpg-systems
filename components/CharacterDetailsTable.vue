@@ -16,6 +16,10 @@ import type { CharacterInfo } from '~/types'
 const $props = defineProps<{
   characterInfo: CharacterInfo
 }>()
+
+const magicLevel = computed(() => {
+  return $props.characterInfo.attributes.find((attr) => attr.key === 'Magia')?.customData || ''
+})
 </script>
 
 <template>
@@ -30,6 +34,16 @@ const $props = defineProps<{
               <fwb-table-row v-for="{ key, value } in $props.characterInfo['base-info']" :key="key">
                 <fwb-table-head-cell>{{ key }}</fwb-table-head-cell>
                 <fwb-table-cell>{{ value }}</fwb-table-cell>
+              </fwb-table-row>
+
+              <fwb-table-row>
+                <fwb-table-head-cell>Poziom Mocy</fwb-table-head-cell>
+                <fwb-table-cell>{{ magicLevel || '0' }}</fwb-table-cell>
+              </fwb-table-row>
+
+              <fwb-table-row v-for="{ key, value } in $props.characterInfo['eldritch']" :key="key">
+                <fwb-table-head-cell>{{ key }}</fwb-table-head-cell>
+                <fwb-table-cell>{{ key === 'Choroby Psychiczne' && !value ? '-' : value }}</fwb-table-cell>
               </fwb-table-row>
             </fwb-table-body>
           </fwb-table>
