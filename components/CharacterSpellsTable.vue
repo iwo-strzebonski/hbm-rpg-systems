@@ -201,7 +201,7 @@ onMounted(() => {
 
                 <fwb-table-row v-show="shownDescriptions[i]">
                   <fwb-table-cell
-                    colspan="5"
+                    colspan="6"
                     class="text-left text-base bg-white dark:!bg-zinc-900 w-[calc(100%_-_6rem)]"
                   >
                     <p class="text-left ml-4 [&>*]:list-disc" v-html="spell.stats"></p>
