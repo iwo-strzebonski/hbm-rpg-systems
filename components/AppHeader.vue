@@ -23,14 +23,14 @@ import { FwbNavbar, FwbNavbarCollapse } from 'flowbite-vue'
             class="dark:hover:bg-zinc-500 px-4 py-2 rounded-lg"
             :class="{ 'dark:bg-zinc-800': $route.name === 'index' }"
           >
-            Strona Główna
+            Karty Postaci
           </NuxtLink>
           <NuxtLink
-            to="/character-sheet"
+            to="/chat"
             class="dark:hover:bg-zinc-500 px-4 py-2 rounded-lg mt-2 md:!ml-2 md:mt-0"
-            :class="{ 'dark:bg-zinc-800': $route.name === 'character-sheet' }"
+            :class="{ 'dark:bg-zinc-800': $route.name === 'chat' }"
           >
-            Karty Postaci
+            Czat
           </NuxtLink>
           <NuxtLink
             to="/corebooks"

@@ -1,62 +1,173 @@
 <script setup lang="ts">
-import { Client } from 'appwrite'
+import { Client, Databases, ID, type Models } from 'appwrite'
+import { FwbSpinner } from 'flowbite-vue'
 
-import { APPWRITE_CONFIG, TEAMS } from '~/settings/constants'
+import { TEAMS, DOCUMENTS, APPWRITE_CONFIG } from '~/settings/constants'
 import useCampaignStore from '~/store/campaign.store'
+import { type DocumentFile } from '~/utils/findEntryInAnyDocument'
+
+import type { CharacterInfo } from '~/types'
+
+enum DiceRollTypeEnum {
+  SKILL = 'skills',
+  SPELL = 'spells'
+}
 
 const campaignStore = useCampaignStore()
 
-interface MessageDocument {
-  $id: string
-  party: string
-  sender: string
-  message: string
+const isShowModal = ref(false)
+const modalTitle = ref<string>('')
+const rollResult = ref<{ results: number[]; sum: number }>({ results: [], sum: 0 })
+const testValue = ref<string>('')
+const displayRaw = ref(false)
+
+const createMessage =
+  ref<(id: string, payload: { party: string; sender: string; message: string }) => Promise<Models.Document>>()
+
+const { data: documentFiles } = useLazyAsyncData<DocumentFile[]>(async () => {
+  const files = await Promise.all(
+    DOCUMENTS.map(async (document) => {
+      const doc = await $fetch<string>(`/api/documents/${document.documentId}`)
+
+      return {
+        id: document.documentId,
+        name: document.name,
+        data: doc
+      }
+    })
+  )
+
+  return files
+})
+
+function closeModal() {
+  isShowModal.value = false
+  modalTitle.value = ''
 }
 
-const data = ref<MessageDocument[]>([])
-const disconnect = ref<() => void>()
+function handleRollDice(skillOrSpellId: number, diceAmount: number, type: DiceRollTypeEnum, test = '') {
+  if (!(campaignStore.characterInfo && createMessage.value)) {
+    return
+  }
+
+  const skillOrSpell = campaignStore.characterInfo[type as keyof CharacterInfo][skillOrSpellId]
+
+  const { results, sum } = rollDice(diceAmount)
+  modalTitle.value = skillOrSpell.key
+
+  createMessage.value(ID.unique(), {
+    party: campaignStore.party,
+    sender: campaignStore.character,
+    message: `${skillOrSpell.key} - ${test ? test + ' - ' : ''}${results.join(', ')} (${sum})`
+  })
+
+  rollResult.value = {
+    results,
+    sum
+  }
+
+  testValue.value = test
+
+  isShowModal.value = true
+}
 
 onMounted(() => {
   const client = new Client().setEndpoint(APPWRITE_CONFIG.endpoint).setProject(APPWRITE_CONFIG.project)
+  const databases = new Databases(client)
 
-  disconnect.value = client.subscribe(
-    `databases.${APPWRITE_CONFIG.databaseId}.collections.${APPWRITE_CONFIG.collectionId}.documents`,
-    (res) => {
-      if (res.events.includes('databases.*.collections.*.documents.*.create')) {
-        data.value.push(res.payload as MessageDocument)
-      }
-    }
+  createMessage.value = databases.createDocument.bind(
+    databases,
+    APPWRITE_CONFIG.databaseId,
+    APPWRITE_CONFIG.collectionId
   )
 })
 
-onUnmounted(() => {
-  disconnect.value && disconnect.value()
-})
+watch(
+  () => campaignStore.party,
+  async (party) => {
+    if (!party) {
+      return
+    }
+
+    await campaignStore.setWorkbook(party)
+  }
+)
 </script>
 
 <template>
   <main class="container mx-auto px-4 mt-4">
-    <!-- {{ session }} -->
-    <span v-if="campaignStore.partyName">
-      Wybrana Drużyna: <span class="text-2xl">{{ campaignStore.partyName }}</span>
-    </span>
-    <br />
-    <span v-if="campaignStore.character">
-      Wybrana Postać: <span class="text-2xl">{{ campaignStore.character }}</span>
-    </span>
+    <div class="w-full flex flex-col xs:flex-row justify-between items-center gap-2">
+      <label for="team">Drużyna</label>
 
-    <h2 v-if="campaignStore.character" class="text-2xl mt-4">Historia rzutów i czat Work in Progress</h2>
+      <select v-model="campaignStore.party" name="team" class="dark:bg-zinc-700">
+        <option selected disabled value="">Wybierz drużynę...</option>
+        <option v-for="team in TEAMS" :key="team.name" :value="team.sheetId">
+          {{ team.name }}
+        </option>
+      </select>
+    </div>
 
-    <ul
-      v-if="campaignStore.partyName"
-      class="mt-4 w-full text-xs py-2 px-4 border rounded-xl bg-zinc-50 dark:bg-zinc-950"
-    >
-      <li v-for="message in data" :key="message.$id">
-        <span class="font-bold">[{{ TEAMS.find((team) => team.sheetId === message.party)?.name }}]</span>
-        <span class="italic"> {{ ' ' }}{{ message.sender }} </span>:
-        {{ message.message }}
-      </li>
-      <li v-if="!data.length">Brak wiadomości</li>
-    </ul>
+    <div v-if="campaignStore.party" class="w-full flex flex-col xs:flex-row justify-between items-center mt-4 gap-2">
+      <label for="character">Postać</label>
+
+      <fwb-spinner v-if="!campaignStore.characters.length" size="12" />
+
+      <select v-else v-model="campaignStore.character" name="character" class="dark:bg-zinc-700">
+        <option selected disabled value="">Wybierz postać...</option>
+        <option v-for="character in campaignStore.characters" :key="character" :value="character">
+          {{ character }}
+        </option>
+      </select>
+    </div>
+
+    <div class="w-full flex flex-col md:flex-row justify-between items-start mt-4 gap-4">
+      <div class="w-full md:w-1/2">
+        <CharacterDetailsTable v-if="campaignStore.characterInfo" />
+      </div>
+
+      <div class="w-full md:w-1/2 flex flex-col gap-4">
+        <CharacterAttributesTable v-if="campaignStore.characterInfo" />
+        <CharacterStatsTable v-if="campaignStore.characterInfo" />
+      </div>
+    </div>
+
+    <CharacterTalentsCard v-if="documentFiles" :document-files="documentFiles" />
+
+    <CharacterSkillsTable
+      v-if="campaignStore.characterInfo"
+      @roll-dice="(id, amount) => handleRollDice(id, amount, DiceRollTypeEnum.SKILL)"
+    />
+
+    <CharacterSpellsTable
+      v-if="campaignStore.characterInfo && documentFiles"
+      :document-files="documentFiles"
+      @cast-spell="(id, amount, test) => handleRollDice(id, amount, DiceRollTypeEnum.SPELL, test)"
+    />
+
+    <CharacterEquipmentCard v-if="campaignStore.characterInfo" />
+
+    <div class="my-4">
+      <button class="inline-flex items-center gap-1" @click="displayRaw = !displayRaw">
+        <h3>RAW</h3>
+        <lazy-client-only>
+          <fa-icon v-if="displayRaw" icon="caret-up" class="h-6 w-6 pb-1" />
+          <fa-icon v-else icon="caret-down" class="h-6 w-6 pb-1" />
+        </lazy-client-only>
+      </button>
+
+      <pre v-if="displayRaw" class="text-xs py-2 px-4 border rounded-xl bg-zinc-50 dark:bg-zinc-950">
+          {{ campaignStore.characterInfo }}
+        </pre
+      >
+    </div>
+
+    <RollResultModal
+      :is-show-modal="isShowModal"
+      :results="rollResult.results"
+      :sum="rollResult.sum"
+      :modal-title="modalTitle"
+      :test-value="testValue"
+      @close="closeModal"
+    />
   </main>
 </template>

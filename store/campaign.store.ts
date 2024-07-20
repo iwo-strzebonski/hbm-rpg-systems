@@ -4,14 +4,17 @@ import XLSX from 'xlsx'
 
 import { TEAMS } from '~/settings/constants'
 
-import type { CharacterInfo } from '~/types'
+import type { Client } from 'appwrite'
+import type { CharacterInfo, MessageDocument } from '~/types'
 
 export default defineStore({
   id: 'campaign',
   state: () => ({
     party: '',
     character: '',
-    workbook: null as XLSX.WorkBook | null
+    workbook: null as XLSX.WorkBook | null,
+    messages: [] as MessageDocument[],
+    appwriteClient: null as Client | null
   }),
   getters: {
     partyName(): string {
@@ -33,6 +36,9 @@ export default defineStore({
       if (!this.worksheet) return null
 
       return parseCharacterData(this.worksheet)
+    },
+    partyMessages(): MessageDocument[] {
+      return this.messages.filter((message) => message.party === this.party)
     }
   },
   actions: {
