@@ -147,7 +147,7 @@ onMounted(() => {
             <fwb-table-head>
               <fwb-table-head-cell>Nazwa</fwb-table-head-cell>
               <fwb-table-head-cell>Koszt Many</fwb-table-head-cell>
-              <fwb-table-head-cell v-if="isPriest">Modlitwa?</fwb-table-head-cell>
+              <fwb-table-head-cell v-show="isPriest">Modlitwa?</fwb-table-head-cell>
               <fwb-table-head-cell>Bonus</fwb-table-head-cell>
               <fwb-table-head-cell>Ilość kości</fwb-table-head-cell>
               <fwb-table-head-cell>
@@ -157,22 +157,22 @@ onMounted(() => {
 
             <fwb-table-body>
               <template v-for="(spell, i) in spells" :key="spell.key">
-                <fwb-table-row>
+                <fwb-table-row class="">
                   <fwb-table-head-cell>
                     <fwb-button
                       color="purple"
-                      class="h-full w-full"
+                      class="h-full w-full text-center"
                       @click="shownDescriptions[i] = !shownDescriptions[i]"
                     >
                       {{ spell.key }}
                     </fwb-button>
                   </fwb-table-head-cell>
 
-                  <fwb-table-cell>
+                  <fwb-table-cell class="text-left">
                     {{ spell.cost }}
                   </fwb-table-cell>
 
-                  <fwb-table-cell v-if="isPriest" class="text-center">
+                  <fwb-table-cell v-show="isPriest" class="text-center">
                     <input type="checkbox" class="dark:bg-zinc-700" @click="updateIsPrayer(i)" />
                   </fwb-table-cell>
 
