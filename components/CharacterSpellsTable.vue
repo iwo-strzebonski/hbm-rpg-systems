@@ -172,7 +172,7 @@ onMounted(() => {
                     {{ spell.cost }}
                   </fwb-table-cell>
 
-                  <fwb-table-cell v-show="isPriest" class="text-center">
+                  <fwb-table-cell v-show="isPriest" class="text-left">
                     <input type="checkbox" class="dark:bg-zinc-700" @click="updateIsPrayer(i)" />
                   </fwb-table-cell>
 
