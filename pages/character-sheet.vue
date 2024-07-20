@@ -119,15 +119,13 @@ watch(
       @roll-dice="(id, amount) => handleRollDice(id, amount, DiceRollTypeEnum.SKILL)"
     />
 
-    <div class="flex gap-4 flex-col lg:flex-row mt-4">
-      <CharacterSpellsTable
-        v-if="campaignStore.characterInfo && documentFiles"
-        :document-files="documentFiles"
-        @cast-spell="(id, amount, test) => handleRollDice(id, amount, DiceRollTypeEnum.SPELL, test)"
-      />
+    <CharacterSpellsTable
+      v-if="campaignStore.characterInfo && documentFiles"
+      :document-files="documentFiles"
+      @cast-spell="(id, amount, test) => handleRollDice(id, amount, DiceRollTypeEnum.SPELL, test)"
+    />
 
-      <CharacterEquipmentCard v-if="campaignStore.characterInfo" />
-    </div>
+    <CharacterEquipmentCard v-if="campaignStore.characterInfo" />
 
     <div class="my-4">
       <button class="inline-flex items-center gap-1" @click="displayRaw = !displayRaw">

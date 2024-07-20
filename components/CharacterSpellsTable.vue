@@ -138,7 +138,7 @@ onMounted(() => {
 
 <template>
   <lazy-client-only>
-    <fwb-accordion class="flowbite custom-accordion w-full lg:w-1/2">
+    <fwb-accordion class="flowbite custom-accordion w-full mt-4">
       <fwb-accordion-panel v-if="campaignStore.characterInfo">
         <fwb-accordion-header class="custom-header"> Zaklęcia </fwb-accordion-header>
 
