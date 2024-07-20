@@ -200,14 +200,14 @@ onMounted(() => {
                 </fwb-table-row>
 
                 <fwb-table-row v-show="shownDescriptions[i]">
-                  <fwb-table-cell
-                    colspan="6"
-                    class="text-left text-base bg-white dark:!bg-zinc-900 w-[calc(100%_-_6rem)]"
-                  >
-                    <p class="text-left ml-4 [&>*]:list-disc" v-html="spell.stats"></p>
+                  <fwb-table-cell colspan="6" class="text-left text-base bg-white dark:!bg-zinc-900 max-w-[100%]">
+                    <p
+                      class="text-left ml-4 [&>*]:list-disc [&>*]:break-word [&>*]:whitespace-normal"
+                      v-html="spell.stats"
+                    ></p>
 
                     <p
-                      class="text-left text-sm flex flex-col mt-4 gap-2 [&>*]:break-word whitespace-normal"
+                      class="text-left text-sm flex flex-col mt-4 gap-2 [&>*]:break-word [&>*]:whitespace-normal"
                       v-html="spell.description"
                     ></p>
 
