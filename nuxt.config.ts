@@ -1,5 +1,3 @@
-import { resolve } from 'path'
-
 import iconData from './public/icons.json' assert { type: 'json' }
 import { APP_TITLE } from './settings/constants'
 
@@ -143,18 +141,6 @@ export default defineNuxtConfig({
     fallback: 'dark'
   },
 
-  content: {
-    documentDriven: true,
-    ignores: ['README.md', 'LICENSE.md', 'CHANGELOG.md', 'CONTRIBUTING.md', 'CODE_OF_CONDUCT.md', 'SECURITY.md'],
-    sources: {
-      content: {
-        driver: 'fs',
-        prefix: 'blog',
-        base: resolve(__dirname, 'content')
-      }
-    }
-  },
-
   pwa: {
     devOptions: { enabled: true },
     registerType: 'autoUpdate',
@@ -167,7 +153,6 @@ export default defineNuxtConfig({
   },
 
   modules: [
-    '@nuxt/content',
     '@nuxtjs/color-mode',
     '@nuxt/image-edge',
     '@pinia/nuxt',

@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { Client, Databases, ID, type Models } from 'appwrite'
 import { FwbSpinner } from 'flowbite-vue'
 
-import { TEAMS, DOCUMENTS } from '~/settings/constants'
+import { TEAMS, DOCUMENTS, APPWRITE_CONFIG } from '~/settings/constants'
 import useCampaignStore from '~/store/campaign.store'
 import { type DocumentFile } from '~/utils/findEntryInAnyDocument'
 
@@ -19,6 +20,9 @@ const modalTitle = ref<string>('')
 const rollResult = ref<{ results: number[]; sum: number }>({ results: [], sum: 0 })
 const testValue = ref<string>('')
 const displayRaw = ref(false)
+
+const createMessage =
+  ref<(id: string, payload: { party: string; sender: string; message: string }) => Promise<Models.Document>>()
 
 const { data: documentFiles } = useLazyAsyncData<DocumentFile[]>(async () => {
   const files = await Promise.all(
@@ -42,7 +46,7 @@ function closeModal() {
 }
 
 function handleRollDice(skillOrSpellId: number, diceAmount: number, type: DiceRollTypeEnum, test = '') {
-  if (!campaignStore.characterInfo) {
+  if (!(campaignStore.characterInfo && createMessage.value)) {
     return
   }
 
@@ -51,7 +55,11 @@ function handleRollDice(skillOrSpellId: number, diceAmount: number, type: DiceRo
   const { results, sum } = rollDice(diceAmount)
   modalTitle.value = skillOrSpell.key
 
-  console.info(`Wynik rzutu: ${sum} (${results.join(', ')})`)
+  createMessage.value(ID.unique(), {
+    party: campaignStore.party,
+    sender: campaignStore.character,
+    message: `${test ? test + ' - ' : ''}${skillOrSpell.key} - ${results.join(', ')} (${sum})`
+  })
 
   rollResult.value = {
     results,
@@ -62,6 +70,17 @@ function handleRollDice(skillOrSpellId: number, diceAmount: number, type: DiceRo
 
   isShowModal.value = true
 }
+
+onMounted(() => {
+  const client = new Client().setEndpoint(APPWRITE_CONFIG.endpoint).setProject(APPWRITE_CONFIG.project)
+  const databases = new Databases(client)
+
+  createMessage.value = databases.createDocument.bind(
+    databases,
+    APPWRITE_CONFIG.databaseId,
+    APPWRITE_CONFIG.collectionId
+  )
+})
 
 watch(
   () => campaignStore.party,

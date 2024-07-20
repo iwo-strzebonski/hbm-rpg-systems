@@ -1,5 +1,12 @@
 export const APP_TITLE = 'Homebrew Magic: RPG Systems'
 
+export const APPWRITE_CONFIG = {
+  endpoint: 'https://cloud.appwrite.io/v1',
+  project: '669b7e37001d00edbbe9',
+  databaseId: '669b7fc100018e889d26',
+  collectionId: '669b7ff80035f5d3267e'
+}
+
 export const TEAMS = [
   {
     name: 'Cień Otchłani nad Integrą',
