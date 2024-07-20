@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { FwbAccordion, FwbAccordionPanel, FwbAccordionHeader, FwbAccordionContent } from 'flowbite-vue'
+
+import useCampaignStore from '~/store/campaign.store'
+
+const _campaignStore = useCampaignStore()
 </script>
 
 <template>

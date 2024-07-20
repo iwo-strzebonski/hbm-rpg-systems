@@ -11,7 +11,6 @@ body {
 
 /* Page transition effects */
 
-/*
 .page-enter-active,
 .page-leave-active {
   transition: all 0.3s;
@@ -21,18 +20,6 @@ body {
 .page-leave-to {
   opacity: 0;
   filter: blur(1rem);
-}
-*/
-
-.content-page.page-enter-active main,
-.content-page.page-leave-active main {
-  transition: all 0.2s;
-}
-
-.content-page.page-enter-from main,
-.content-page.page-leave-to main {
-  opacity: 0;
-  filter: grayscale(1);
 }
 
 .index-page.page-enter-from,

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-/* eslint-disable vue/no-mutating-props */
-
 import {
   FwbAccordion,
   FwbAccordionHeader,
@@ -15,13 +13,17 @@ import {
   FwbButton
 } from 'flowbite-vue'
 
-import { DOCUMENTS } from '~/settings/constants'
+import useCampaignStore from '~/store/campaign.store'
 import calculateSkillValueWithAttribute from '~/utils/calculateSkillValueWithAttribute'
 
-import type { CharacterInfo } from '~/types'
+const campaignStore = useCampaignStore()
+
+const shownDescriptions = ref<boolean[]>([])
+const arePrayers = ref<boolean[]>([])
+const bonusDice = ref<number[]>([])
+const diceAmounts = ref<number[]>([])
 
 const $props = defineProps<{
-  characterInfo: CharacterInfo
   documentFiles: DocumentFile[]
 }>()
 
@@ -29,16 +31,23 @@ const $emit = defineEmits({
   castSpell: (_id: number, _amount: number, _test: string) => true
 })
 
-const spellbookId = DOCUMENTS.find((document) => document.name === 'Księga Magii')?.documentId
-
 const isPriest = computed(() => {
-  return $props.characterInfo.talents.findIndex((info) => info.key === 'Błogosławieństwo') !== -1
+  if (!campaignStore.characterInfo) {
+    return false
+  }
+
+  return campaignStore.characterInfo.talents.findIndex((info) => info.key === 'Błogosławieństwo') !== -1
 })
 
+const spells = ref<Record<string, string | boolean | number>[]>([])
+
 function calculateSpellDiceAmount(spellId: number) {
-  const spell = $props.characterInfo.spells[spellId]
-  const skill = $props.characterInfo.skills.find(
-    (s) => s.key === (isPriest.value && spell.isPrayer ? 'Oddanie' : 'Zdolności Magiczne')
+  if (!campaignStore.characterInfo) {
+    return 0
+  }
+
+  const skill = campaignStore.characterInfo.skills.find(
+    (s) => s.key === (isPriest.value && arePrayers.value[spellId] ? 'Oddanie' : 'Zdolności Magiczne')
   )
 
   if (!skill) {
@@ -47,11 +56,11 @@ function calculateSpellDiceAmount(spellId: number) {
 
   const skillValue = calculateSkillValueWithAttribute(
     skill.value,
-    isPriest.value && spell.isPrayer ? 'Dusza' : 'Magia',
-    $props.characterInfo
+    isPriest.value && arePrayers.value[spellId] ? 'Dusza' : 'Magia',
+    campaignStore.characterInfo
   )
 
-  return skillValue + parseInt(spell.customData as string)
+  return skillValue + bonusDice.value[spellId]
 }
 
 function getTestValueForSpell(spellId: number): string {
@@ -62,6 +71,10 @@ function getTestValueForSpell(spellId: number): string {
   const { stats } = desc
 
   const re = /<li>.*?(?<testValue>\d:\d)<\/li>/
+
+  if (!stats) {
+    return '0:0'
+  }
 
   const testValueMatch = stats.match(re)
 
@@ -77,40 +90,56 @@ function handleRollDice(spellId: number) {
 }
 
 function getSpellDescription(spellId: number) {
-  const spell = $props.characterInfo.spells[spellId]
+  if (!campaignStore.characterInfo) {
+    return null
+  }
+
+  const spell = campaignStore.characterInfo.spells[spellId]
 
   if (!spell) {
     return null
   }
 
-  const spellInfo = findEntryInDocument($props.documentFiles, 'Księga Magii', spell.key, EntryTypeEnum.SPELL)
+  const spellInfo = findEntryInAnyDocument($props.documentFiles, spell.key, EntryTypeEnum.SPELL)
 
   if (!spellInfo) {
     return null
   }
 
-  return spellInfo as {
-    id: string
-    stats: string
-    description: string
-  }
+  return spellInfo
 }
 
-function toggleDescription(spellId: number) {
-  const spell = $props.characterInfo.spells[spellId]
+function updateIsPrayer(spellId: number) {
+  arePrayers.value[spellId] = !arePrayers.value[spellId]
+  diceAmounts.value[spellId] = calculateSpellDiceAmount(spellId)
+}
 
-  if (!spell) {
+onMounted(() => {
+  if (!campaignStore.characterInfo) {
     return
   }
 
-  spell.isDescriptionOpen = !spell.isDescriptionOpen
-}
+  spells.value = campaignStore.characterInfo.spells.map((spell) => {
+    const spellInfo = findEntryInAnyDocument($props.documentFiles, spell.key, EntryTypeEnum.SPELL)
+
+    return {
+      ...spell,
+      ...spellInfo,
+      isPrayer: spell.isPrayer || false
+    }
+  })
+
+  shownDescriptions.value = Array(spells.value.length).fill(false)
+  arePrayers.value = spells.value.map((spell) => Boolean(spell.isPrayer))
+  bonusDice.value = spells.value.map((spell) => Number(spell.customData || 0))
+  diceAmounts.value = spells.value.map((_, i) => calculateSpellDiceAmount(i))
+})
 </script>
 
 <template>
   <lazy-client-only>
     <fwb-accordion class="flowbite custom-accordion w-full lg:w-1/2">
-      <fwb-accordion-panel>
+      <fwb-accordion-panel v-if="campaignStore.characterInfo">
         <fwb-accordion-header class="custom-header"> Zaklęcia </fwb-accordion-header>
 
         <fwb-accordion-content class="custom-content [&>*]:p-0 overflow-auto max-h-[calc(100vh_-_66px)]">
@@ -127,39 +156,40 @@ function toggleDescription(spellId: number) {
             </fwb-table-head>
 
             <fwb-table-body>
-              <template v-for="({ key, isDescriptionOpen }, i) in $props.characterInfo['spells']" :key="key">
+              <template v-for="(spell, i) in spells" :key="spell.key">
                 <fwb-table-row>
                   <fwb-table-head-cell>
-                    <fwb-button color="purple" class="h-full w-full" @click="toggleDescription(i)">
-                      {{ key }}
+                    <fwb-button
+                      color="purple"
+                      class="h-full w-full"
+                      @click="shownDescriptions[i] = !shownDescriptions[i]"
+                    >
+                      {{ spell.key }}
                     </fwb-button>
                   </fwb-table-head-cell>
 
                   <fwb-table-cell>
-                    {{ $props.characterInfo['spells'][i].cost }}
+                    {{ spell.cost }}
                   </fwb-table-cell>
 
                   <fwb-table-cell v-if="isPriest" class="text-center">
-                    <input
-                      v-model="$props.characterInfo['spells'][i].isPrayer"
-                      type="checkbox"
-                      class="dark:bg-zinc-700"
-                    />
+                    <input type="checkbox" class="dark:bg-zinc-700" @click="updateIsPrayer(i)" />
                   </fwb-table-cell>
 
                   <fwb-table-cell>
                     <input
-                      v-model="$props.characterInfo['spells'][i].customData"
+                      v-model="bonusDice[i]"
                       step="1"
                       min="-10"
                       max="10"
                       type="number"
                       class="dark:bg-zinc-700"
+                      @change="diceAmounts[i] = calculateSpellDiceAmount(i)"
                     />
                   </fwb-table-cell>
 
                   <fwb-table-cell>
-                    {{ calculateSpellDiceAmount(i) }}
+                    {{ diceAmounts[i] }}
                   </fwb-table-cell>
 
                   <fwb-table-cell>
@@ -169,21 +199,21 @@ function toggleDescription(spellId: number) {
                   </fwb-table-cell>
                 </fwb-table-row>
 
-                <fwb-table-row v-show="isDescriptionOpen" v-if="getSpellDescription(i)">
+                <fwb-table-row v-show="shownDescriptions[i]">
                   <fwb-table-cell
                     colspan="5"
                     class="text-left text-base bg-white dark:!bg-zinc-900 w-[calc(100%_-_6rem)]"
                   >
-                    <p class="text-left ml-4 [&>*]:list-disc" v-html="getSpellDescription(i)?.stats"></p>
+                    <p class="text-left ml-4 [&>*]:list-disc" v-html="spell.stats"></p>
 
                     <p
                       class="text-left text-sm flex flex-col mt-4 gap-2 [&>*]:break-word whitespace-normal"
-                      v-html="getSpellDescription(i)?.description"
+                      v-html="spell.description"
                     ></p>
 
                     <nuxt-link
                       class="float-left mt-2 font-semibold hover:underline text-blue-500 dark:text-blue-400 text-lg"
-                      :to="`https://docs.google.com/document/d/${spellbookId}#heading=h.${getSpellDescription(i)?.id}`"
+                      :to="`https://docs.google.com/document/d/${spell.documentId}#heading=h.${spell.id}`"
                       target="_blank"
                       rel="noopener noreferrer"
                     >

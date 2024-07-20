@@ -11,27 +11,25 @@ import {
   FwbTableCell
 } from 'flowbite-vue'
 
-import type { CharacterInfo } from '~/types'
+import useCampaignStore from '~/store/campaign.store'
 
-const $props = defineProps<{
-  characterInfo: CharacterInfo
-}>()
+const campaignStore = useCampaignStore()
 
 const magicLevel = computed(() => {
-  return $props.characterInfo.attributes.find((attr) => attr.key === 'Magia')?.customData || ''
+  return campaignStore.characterInfo?.attributes.find((attr) => attr.key === 'Magia')?.customData || ''
 })
 </script>
 
 <template>
   <lazy-client-only>
     <fwb-accordion class="flowbite custom-accordion">
-      <fwb-accordion-panel>
+      <fwb-accordion-panel v-if="campaignStore.characterInfo">
         <fwb-accordion-header class="custom-header"> Dane Osobowe </fwb-accordion-header>
 
         <fwb-accordion-content class="custom-content [&>*]:p-0">
           <fwb-table class="flowbite custom-table" hoverable>
             <fwb-table-body>
-              <fwb-table-row v-for="{ key, value } in $props.characterInfo['base-info']" :key="key">
+              <fwb-table-row v-for="{ key, value } in campaignStore.characterInfo['base-info']" :key="key">
                 <fwb-table-head-cell>{{ key }}</fwb-table-head-cell>
                 <fwb-table-cell>{{ value }}</fwb-table-cell>
               </fwb-table-row>
@@ -41,7 +39,7 @@ const magicLevel = computed(() => {
                 <fwb-table-cell>{{ magicLevel || '0' }}</fwb-table-cell>
               </fwb-table-row>
 
-              <fwb-table-row v-for="{ key, value } in $props.characterInfo['eldritch']" :key="key">
+              <fwb-table-row v-for="{ key, value } in campaignStore.characterInfo['eldritch']" :key="key">
                 <fwb-table-head-cell>{{ key }}</fwb-table-head-cell>
                 <fwb-table-cell>{{ key === 'Choroby Psychiczne' && !value ? '-' : value }}</fwb-table-cell>
               </fwb-table-row>

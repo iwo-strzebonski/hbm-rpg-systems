@@ -1,92 +1,69 @@
 <script setup lang="ts">
 import { FwbAccordion, FwbAccordionPanel, FwbAccordionHeader, FwbAccordionContent } from 'flowbite-vue'
 
-import { DOCUMENTS } from '~/settings/constants'
-import { EntryTypeEnum, type DocumentFile } from '~/utils/findEntryInDocument'
+import useCampaignStore from '~/store/campaign.store'
+import { EntryTypeEnum, type DocumentFile } from '~/utils/findEntryInAnyDocument'
 
-import type { CharacterInfo } from '~/types'
-
-const corebookId = DOCUMENTS.find((document) => document.name === 'Podręcznik Gry')?.documentId
+const campaignStore = useCampaignStore()
 
 const $props = defineProps<{
-  characterInfo: CharacterInfo
   documentFiles: DocumentFile[]
 }>()
 
-const uniqueTalentsWithRepeatCount = computed(() => {
-  const talents = $props.characterInfo?.talents || []
+const uniqueTalents = computed(() => {
+  const talents = campaignStore.characterInfo?.talents || []
 
-  const uniqueTalents: Record<string, number> = {}
+  const ut: Record<string, TalentEntry & { documentId: string; count: number }> = {}
 
   for (const talent of talents) {
     const subtalent = talent.customData as string
     const key = talent.key + (subtalent && subtalent !== '---' ? ` (${subtalent})` : '')
 
-    uniqueTalents[key] = (uniqueTalents[key] || 0) + 1
+    const talentData = findEntryInAnyDocument($props.documentFiles, key, EntryTypeEnum.TALENT)
+
+    if (!talentData) {
+      continue
+    }
+
+    ut[key] = key in ut ? { ...ut[key], count: ut[key].count + 1 } : { count: 1, ...talentData }
   }
 
-  return uniqueTalents
+  return ut
 })
 </script>
 
 <template>
   <lazy-client-only>
     <fwb-accordion class="flowbite custom-accordion mt-4">
-      <fwb-accordion-panel>
+      <fwb-accordion-panel v-if="campaignStore.characterInfo">
         <fwb-accordion-header class="custom-header"> Talenty </fwb-accordion-header>
 
         <fwb-accordion-content class="custom-content [&>*]:p-0">
           <fwb-accordion
-            v-if="Object.keys(uniqueTalentsWithRepeatCount).length"
+            v-if="Object.keys(uniqueTalents).length"
             class="custom-accordion flush"
             always-open
             flush
             :open-first-item="false"
           >
-            <fwb-accordion-panel v-for="(value, key) in uniqueTalentsWithRepeatCount" :key="key">
+            <fwb-accordion-panel v-for="(talent, key) in uniqueTalents" :key="key">
               <fwb-accordion-header class="[&>*]:dark:!bg-zinc-800">
-                {{ key }} <span v-if="value > 1">(x{{ value }})</span>
+                {{ key }} <span v-if="talent.count > 1">(x{{ talent.count }})</span>
               </fwb-accordion-header>
 
               <fwb-accordion-content class="custom-content">
                 <div>
                   <p
-                    v-if="
-                      findEntryInDocument(
-                        $props.documentFiles,
-                        'Podręcznik Gry',
-                        key.split(' ')[0],
-                        EntryTypeEnum.TALENT
-                      )?.requirements
-                    "
+                    v-if="talent.requirements"
                     class="mb-2 text-zinc-500 dark:text-zinc-400"
-                    v-html="
-                      findEntryInDocument(
-                        $props.documentFiles,
-                        'Podręcznik Gry',
-                        key.split(' ')[0],
-                        EntryTypeEnum.TALENT
-                      )?.requirements
-                    "
+                    v-html="talent.requirements"
                   ></p>
 
-                  <p
-                    class="text-zinc-500 dark:text-zinc-400 flex flex-col gap-2"
-                    v-html="
-                      findEntryInDocument(
-                        $props.documentFiles,
-                        'Podręcznik Gry',
-                        key.split(' ')[0],
-                        EntryTypeEnum.TALENT
-                      )?.description
-                    "
-                  ></p>
+                  <p class="text-zinc-500 dark:text-zinc-400 flex flex-col gap-2" v-html="talent.description"></p>
 
                   <nuxt-link
                     class="mt-2 font-semibold hover:underline text-blue-500 dark:text-blue-400 text-lg"
-                    :to="`https://docs.google.com/document/d/${corebookId}#heading=h.${
-                      findEntryInDocument($props.documentFiles, 'Podręcznik Gry', key, EntryTypeEnum.TALENT)?.id
-                    }`"
+                    :to="`https://docs.google.com/document/d/${talent.documentId}#heading=h.${talent.id}`"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
