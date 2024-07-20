@@ -27,7 +27,7 @@ export default defineStore({
     worksheet(): XLSX.WorkSheet | null {
       if (!this.workbook && !this.character) return null
 
-      return this.workbook.Sheets[this.character]
+      return this.workbook?.Sheets[this.character] || null
     },
     characterInfo(): CharacterInfo | null {
       if (!this.worksheet) return null
@@ -37,6 +37,8 @@ export default defineStore({
   },
   actions: {
     async setWorkbook(party: string) {
+      this.workbook = null
+
       try {
         this.workbook = await $fetch<XLSX.WorkBook>(`/api/characters/${party}`)
       } catch (e) {
