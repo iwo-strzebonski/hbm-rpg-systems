@@ -18,6 +18,8 @@ import calculateSkillValueWithAttribute from '~/utils/calculateSkillValueWithAtt
 
 const campaignStore = useCampaignStore()
 
+const refKey = ref('')
+
 const $emit = defineEmits({
   rollDice: (_: number, __: number) => true
 })
@@ -41,6 +43,16 @@ function handleRollDice(skillId: number) {
 
   $emit('rollDice', skillId, skillValue)
 }
+
+function updateSkillValue() {
+  // if (!campaignStore.characterInfo) {
+  //   return
+  // }
+
+  // campaignStore.characterInfo.skills[skillId].value = value
+
+  refKey.value = Math.random().toString(36).substring(7)
+}
 </script>
 
 <template>
@@ -60,7 +72,7 @@ function handleRollDice(skillId: number) {
               </fwb-table-head-cell>
             </fwb-table-head>
 
-            <fwb-table-body>
+            <fwb-table-body :key="refKey">
               <fwb-table-row
                 v-for="({ key, value, customData }, id) in campaignStore.characterInfo['skills']"
                 :key="key"
@@ -68,8 +80,11 @@ function handleRollDice(skillId: number) {
                 <fwb-table-head-cell>{{ key }}</fwb-table-head-cell>
 
                 <fwb-table-cell>
-                  <!-- eslint-disable-next-line vue/no-mutating-props -->
-                  <select v-model="campaignStore.characterInfo['skills'][id].customData" class="dark:bg-zinc-700">
+                  <select
+                    v-model="campaignStore.characterInfo['skills'][id].customData"
+                    class="dark:bg-zinc-700"
+                    @change="updateSkillValue()"
+                  >
                     <option v-for="{ key: k } in campaignStore.characterInfo['attributes']" :key="k" :value="k">
                       {{ k }}
                     </option>
