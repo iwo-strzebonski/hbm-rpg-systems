@@ -58,6 +58,12 @@ export const DOCUMENTS = [
     documentId: '1QyaDzQZIKUxMnEd02Y9AhR0rSmhY2szobUHrzSw2dIA',
     embedUrl:
       'https://docs.google.com/document/d/e/2PACX-1vSwOKvPWFAD1EDBg4g8yDu678K_OiD2TAltY9YpIfbe_YMBxSuldpwvbpBn15f3hu9E84arl9ROFgnP/pub?embedded=true'
+  },
+  {
+    name: 'Bestiariusz',
+    documentId: '16vHSjzVDJDxKriBMNQ_DqkmpXFm0VTQ_GXRoekIc21w',
+    embedUrl:
+      'https://docs.google.com/document/d/e/2PACX-1vRoinWCtkQdfDrwDcRxmf0peHrxyURt9RGXQziR9UFtLbqlqfp820PbjnZDix3FyU9vXfg8gjhBXgfe/pub?embedded=true'
   }
 ]
 
