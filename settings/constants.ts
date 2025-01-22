@@ -9,12 +9,16 @@ export const APPWRITE_CONFIG = {
 
 export const TEAMS = [
   {
-    name: 'Cień Otchłani nad Integrą',
+    name: 'Cień Otchłani nad AGH-em',
     sheetId: '1IUncWaaAt4TPPMI2ynZONiC5bykJFWDcwtoipijWObA'
   },
   {
-    name: 'AGH HbM',
+    name: 'Trzej Pancerni i Elf',
     sheetId: '1O6YANVdbfDQAGsqs325RIxmf0z9qfOvyiuEZ0S-1o0A'
+  },
+  {
+    name: 'NPC-e (GM ONLY YE TWAT)',
+    sheetId: '17PNiz1-6VS_swtWJeyOlrZkE3ddGdAVVOIHZ3aMgAKM'
   }
 ]
 
@@ -30,12 +34,6 @@ export const DOCUMENTS = [
     documentId: '1lwOecWpr7NuMBeKIOfDaWS6PylPydUNHbm9R8tIMw9w',
     embedUrl:
       'https://docs.google.com/document/d/e/2PACX-1vRmRRAAimuzcedPY9-6276lpIS8YM_6dpA_k7rkHywtURxzl58ZZHePShQECNPgBH5kKfuirH0xsi6q/pub?embedded=true'
-  },
-  {
-    name: 'Przewodnik Ludzkości po Magicznym Świecie',
-    documentId: '1QyaDzQZIKUxMnEd02Y9AhR0rSmhY2szobUHrzSw2dIA',
-    embedUrl:
-      'https://docs.google.com/document/d/e/2PACX-1vSwOKvPWFAD1EDBg4g8yDu678K_OiD2TAltY9YpIfbe_YMBxSuldpwvbpBn15f3hu9E84arl9ROFgnP/pub?embedded=true'
   },
   {
     name: 'Klątwa Otchłani',
@@ -54,6 +52,12 @@ export const DOCUMENTS = [
     documentId: '1AsvkL3IzbD94hUw6sGeNtfKxQwO_yYp-avhkwpjGyio',
     embedUrl:
       'https://docs.google.com/document/d/e/2PACX-1vTyxSoC9RCUKfwYkkBIem9cpY_5EjBdu0Z_zzRZKB41QexeVE9cHODfrt_J0A5GbvhYDzUyePamYk8Y/pub?embedded=true'
+  },
+  {
+    name: 'Przewodnik Ludzkości po Magicznym Świecie',
+    documentId: '1QyaDzQZIKUxMnEd02Y9AhR0rSmhY2szobUHrzSw2dIA',
+    embedUrl:
+      'https://docs.google.com/document/d/e/2PACX-1vSwOKvPWFAD1EDBg4g8yDu678K_OiD2TAltY9YpIfbe_YMBxSuldpwvbpBn15f3hu9E84arl9ROFgnP/pub?embedded=true'
   }
 ]
 
