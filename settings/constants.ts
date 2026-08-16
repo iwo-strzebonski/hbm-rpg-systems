@@ -60,6 +60,12 @@ export const DOCUMENTS = [
       'https://docs.google.com/document/d/e/2PACX-1vSwOKvPWFAD1EDBg4g8yDu678K_OiD2TAltY9YpIfbe_YMBxSuldpwvbpBn15f3hu9E84arl9ROFgnP/pub?embedded=true'
   },
   {
+    name: 'Złoto, Stal i Magia',
+    documentId: '1eIpOZRqKZDTEaGTshOPeA6IQOcFOwaO1oo9oPvgj6lI',
+    embedUrl:
+      'https://docs.google.com/document/d/e/2PACX-1vSItIBjYu8MoQjStGUFl6JVKDdzouLmU7iVfV0D6cqY6-ByZOSLWcx9PbJzzmbQr80qQ_XhNGRUuobK/pub?embedded=true'
+  },
+  {
     name: 'Bestiariusz',
     documentId: '16vHSjzVDJDxKriBMNQ_DqkmpXFm0VTQ_GXRoekIc21w',
     embedUrl:
